@@ -11,11 +11,37 @@
     <link rel="stylesheet" crossorigin href="/goit-js-hw-09/assets/index-BxMZGK_l.css">
   </head> 
   <body> 
-    <main> 
-      <!-- Loads the specified .html file --> 
-      <iframe src="1-gallery.html"></iframe> 
-      <iframe src="2-form.html"></iframe>
-    </main> 
+    <main id="main-content"></main> 
       
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const files = ['./1-gallery.html', './2-form.html'];  // Перевірте шляхи до файлів
+        const mainContent = document.getElementById('main-content');
+        
+        files.forEach(file => {
+          fetch(file)
+            .then(response => response.text())
+            .then(data => {
+              const div = document.createElement('div');
+              div.innerHTML = data;
+              mainContent.appendChild(div);
+
+              // Шукаємо <script> елементи в завантаженому HTML і додаємо їх для виконання
+              const scripts = div.querySelectorAll('script');
+              scripts.forEach(script => {
+                const newScript = document.createElement('script');
+                if (script.src) {
+                  newScript.src = script.src;  // Якщо є src, додаємо зовнішній скрипт
+                } else {
+                  newScript.innerHTML = script.innerHTML;  // Якщо немає src, то додаємо inline скрипт
+                }
+                document.body.appendChild(newScript);  // Додаємо скрипт до body для виконання
+              });
+            })
+            .catch(error => console.error('Error loading the file:', error));
+        });
+      });
+    </script>
   </body> 
 </html>
