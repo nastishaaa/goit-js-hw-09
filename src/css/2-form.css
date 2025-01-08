@@ -32,6 +32,10 @@ button{
     color: #fff;
 }
 
+button:hover, button:focus{
+    background: #6c8cff;
+}
+
 div{
     padding: 24px;
 }
