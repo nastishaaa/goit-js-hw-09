@@ -1,51 +1,60 @@
-<!DOCTYPE html> 
-<html lang="en"> 
-  <head> 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" /> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
-    <title>Vanilla App Template</title> 
-    <link rel="stylesheet" href="./css/styles.css" /> 
-  </head> 
-  <body> 
-    <main id="main-content"></main> 
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vanilla App Template</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+  </head>
+  <body>
+    <main id="main-content"></main>
 
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', async function () {
         const mainContent = document.getElementById('main-content');
         if (!mainContent) {
           console.error('Element #main-content not found!');
-          return; // Якщо елемент не знайдений, зупиняємо виконання
+          return;
         }
 
-        const files = ['./1-gallery.html', './2-form.html'];  // Перевірте шляхи до файлів
+        // Масив файлів для завантаження
+        const files = ['./1-gallery.html', './2-form.html'];
 
-        files.forEach(file => {
-          fetch(file)
-            .then(response => response.text())
-            .then(data => {
-              const div = document.createElement('div');
-              div.innerHTML = data;
-              mainContent.appendChild(div);
+        for (const file of files) {
+          try {
+            const response = await fetch(file);
+            const data = await response.text();
+            const div = document.createElement('div');
+            div.innerHTML = data;
+            mainContent.appendChild(div);
 
-              // Шукаємо <script> елементи в завантаженому HTML і додаємо їх для виконання
-              const scripts = div.querySelectorAll('script');
-              scripts.forEach(script => {
-                const newScript = document.createElement('script');
-                if (script.src) {
-                  newScript.src = script.src;  // Якщо є src, додаємо зовнішній скрипт
-                } else {
-                  newScript.innerHTML = script.innerHTML;  // Якщо немає src, то додаємо inline скрипт
-                }
-                document.body.appendChild(newScript);  // Додаємо скрипт до body для виконання
-              });
-            })
-            .catch(error => console.error('Error loading the file:', error));
-        });
+            // Пошук і виконання <script> елементів з HTML-файлів
+            const scripts = div.querySelectorAll('script');
+            scripts.forEach(script => {
+              const newScript = document.createElement('script');
+              if (script.src) {
+                newScript.src = script.src;
+              } else {
+                newScript.innerHTML = script.innerHTML;
+              }
+              document.body.appendChild(newScript);
+            });
+          } catch (error) {
+            console.error(`Error loading file ${file}:`, error);
+          }
+        }
+
+        // Динамічно підключаємо модулі після завантаження HTML
+        try {
+          await import('./js/1-gallery.js');
+          console.log('1-gallery.js loaded and executed');
+          await import('./js/2-form.js');
+          console.log('2-form.js loaded and executed');
+        } catch (error) {
+          console.error('Error loading JavaScript modules:', error);
+        }
       });
     </script>
-
-<script type="module" src="./js/1-gallery.js"></script> 
-<script type="module" src="./js/2-form.js"></script> 
-  </body> 
+  </body>
 </html>
