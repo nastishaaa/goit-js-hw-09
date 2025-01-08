@@ -15,9 +15,14 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        const files = ['./1-gallery.html', './2-form.html'];  // Перевірте шляхи до файлів
         const mainContent = document.getElementById('main-content');
-        
+        if (!mainContent) {
+          console.error('Element #main-content not found!');
+          return; // Якщо елемент не знайдений, зупиняємо виконання
+        }
+
+        const files = ['./1-gallery.html', './2-form.html'];  // Перевірте шляхи до файлів
+
         files.forEach(file => {
           fetch(file)
             .then(response => response.text())
